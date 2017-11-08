@@ -10,4 +10,12 @@ public class Line {
         this.start = start;
         this.end = end;
     }
+
+    public Vector getStart() {
+        return start;
+    }
+
+    public Vector getEnd() {
+        return end;
+    }
 }

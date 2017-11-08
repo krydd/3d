@@ -8,6 +8,7 @@ import net.krydd.shapes.Line2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class GameEngine implements Runnable {
     private static final int MAX_FPS = 60;
@@ -31,25 +32,53 @@ public class GameEngine implements Runnable {
         playerInput.run();
 
         List<Line> obj3d = new ArrayList<>();
-        obj3d.add(new Line(new Vector(50, 50, 0), new Vector(100, 100, 0)));
+        obj3d.add(new Line(new Vector(-50, 0, 0), new Vector(50, 0, 0)));
+        obj3d.add(new Line(new Vector(-50, 0, 0), new Vector(-50, 125, 0)));
+        obj3d.add(new Line(new Vector(50, 0, 0), new Vector(50, 125, 0)));
+        obj3d.add(new Line(new Vector(-50, 125, 0), new Vector(50, 125, 0)));
+
+        obj3d.add(new Line(new Vector(-50, 0, 100), new Vector(50, 0, 100)));
+        obj3d.add(new Line(new Vector(-50, 0, 100), new Vector(-50, 125, 100)));
+        obj3d.add(new Line(new Vector(50, 0, 100), new Vector(50, 125, 100)));
+        obj3d.add(new Line(new Vector(-50, 125, 100), new Vector(50, 125, 100)));
+
+        obj3d.add(new Line(new Vector(-50, 0, 0), new Vector(-50, 0, 100)));
+        obj3d.add(new Line(new Vector(50, 0, 0), new Vector(50, 0, 100)));
+        obj3d.add(new Line(new Vector(-50, 125, 0), new Vector(-50, 125, 100)));
+        obj3d.add(new Line(new Vector(50, 125, 0), new Vector(50, 125, 100)));
 
         long start;
+        int tick = 0;
         while (!playerInput.quit()) {
             start = System.currentTimeMillis();
             objects.clear();
-            camera.move();
+            camera.move(playerInput);
+            Vector planeNormal = camera.getPlaneNormal();
 
-            // Calc plane from camera
-            // Project objects on plane
-            // Draw projected objects
-
-            objects.add(new Line2D(new Vector2D(0, 0), new Vector2D(50, 50)));
+            obj3d.stream()
+                    .map(line -> new Line2D(project(line.getStart(), planeNormal), project(line.getEnd(), planeNormal)))
+                    .forEach(objects::add);
 
             canvas.repaint();
 
             sleep(System.currentTimeMillis() - start);
+
+            int fps = (int) (1000 / (System.currentTimeMillis() - start));
+            if (tick % 20 == 0) {
+                System.out.println(fps);
+            }
+
+            ++tick;
+            if (tick == 1000) {
+                tick = 0;
+            }
         }
         System.exit(1);
+    }
+
+    private Vector2D project(Vector vector, Vector planeNormal) {
+        final Vector projection = vector.subtract(planeNormal.scale(vector.product(planeNormal)));
+        return new Vector2D(projection.getX(), projection.getY());
     }
 
     private void sleep(long elapsed) {

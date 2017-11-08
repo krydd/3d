@@ -12,8 +12,13 @@ public class Camera {
         rotation = new Vector(0, 1, 0);
     }
 
-    public void getPlane() {
-
+    public Vector getPlaneNormal() {
+        return position.subtract(focus).getEntity();
+        /*
+        Matrix base = new Matrix(null);
+        Matrix baseTranspose = base.transpose();
+        return base.multiply(baseTranspose.multiply(base).inverse()).multiply(baseTranspose);
+        */
     }
 
     public Vector getPosition() {
@@ -24,7 +29,7 @@ public class Camera {
         return rotation;
     }
 
-    public void move() {
-
+    public void move(PlayerInput playerInput) {
+        position = position.add(playerInput.getInputVelocity().scale(10));
     }
 }

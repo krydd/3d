@@ -19,7 +19,7 @@ public class Line2D {
 
     public void draw(Graphics g) {
         Vector2D lineVector = end.subtract(start);
-        for (double d = 0; d <= length; d += 1d) {
+        for (double d = 0; d <= length; d += .5d) {
             final Vector2D point = start.add(lineVector.scale(d / length));
             drawPoint(g, (int) point.getX(), (int) point.getY());
         }

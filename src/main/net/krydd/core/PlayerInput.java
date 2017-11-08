@@ -1,5 +1,6 @@
 package net.krydd.core;
 
+import net.krydd.math.Vector;
 import net.krydd.math.Vector2D;
 
 import java.awt.*;
@@ -14,6 +15,8 @@ public class PlayerInput extends Component implements Runnable, KeyListener {
     private boolean right;
     private boolean up;
     private boolean down;
+    private boolean forward;
+    private boolean back;
 
     public PlayerInput() {
         quit = false;
@@ -24,8 +27,19 @@ public class PlayerInput extends Component implements Runnable, KeyListener {
         down = false;
     }
 
-    public Vector2D getInputVelocity() {
-        return new Vector2D(getDeltaX(), getDeltaY());
+    public Vector getInputVelocity() {
+        return new Vector(getDeltaX(), getDeltaY(), getDeltaZ());
+    }
+
+    private double getDeltaZ() {
+        double deltaZ = 0.0;
+        if (back) {
+            deltaZ -= 0.1;
+        }
+        if (forward) {
+            deltaZ += 0.1;
+        }
+        return deltaZ;
     }
 
     private double getDeltaX() {
@@ -82,7 +96,12 @@ public class PlayerInput extends Component implements Runnable, KeyListener {
             up = true;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             down = true;
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {
+            forward = true;
+        } else if (e.getKeyCode() == KeyEvent.VK_Z) {
+            back = true;
         }
+
     }
 
     @Override
@@ -97,6 +116,10 @@ public class PlayerInput extends Component implements Runnable, KeyListener {
             up = false;
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             down = false;
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {
+            forward = false;
+        } else if (e.getKeyCode() == KeyEvent.VK_Z) {
+            back = false;
         }
     }
 }
